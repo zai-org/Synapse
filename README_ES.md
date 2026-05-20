@@ -196,6 +196,7 @@ Hoy el repositorio trae una ruta de autoalojamiento pensada para una sola máqui
 - `systemd` para la API y la web de escritorio
 - `nginx` como punto de entrada público
 - PostgreSQL y Redis en Docker
+- imágenes precompiladas en GHCR para ejecutar opcionalmente la API y la web de escritorio en contenedores
 - la web de escritorio servida desde `packages/web-next`
 - el mobile web exportado estáticamente desde `packages/mobile-app`
 

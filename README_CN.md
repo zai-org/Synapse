@@ -196,6 +196,7 @@ npm run web
 - `systemd` 负责 API 与桌面 Web 进程
 - `nginx` 作为公网入口
 - PostgreSQL 与 Redis 通过 Docker 运行
+- API 与桌面 Web 也提供预构建 GHCR 镜像，可选容器化运行
 - 桌面端由 `packages/web-next` 提供
 - mobile web 由 `packages/mobile-app` 静态导出
 

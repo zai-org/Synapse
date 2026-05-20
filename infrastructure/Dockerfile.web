@@ -1,21 +1,28 @@
 FROM node:20-alpine AS builder
 WORKDIR /app
 
-COPY packages/shared /app/packages/shared
-WORKDIR /app/packages/shared
-RUN npm install
-RUN npm run build
+COPY package.json package-lock.json ./
+COPY packages/shared/package.json packages/shared/
+COPY packages/web-next/package.json packages/web-next/
+RUN npm ci --workspace=packages/shared --workspace=packages/web-next
 
-COPY packages/web-next /app/packages/web-next
-WORKDIR /app/packages/web-next
-RUN npm ci
-RUN npm run build
+COPY tsconfig.base.json ./
+COPY packages/shared/ packages/shared/
+COPY packages/web-next/ packages/web-next/
+RUN npm run build -w packages/shared
+RUN npm run build -w packages/web-next
 
 FROM node:20-alpine
 WORKDIR /app
-COPY --from=builder /app/packages/web-next/.next ./.next
-COPY --from=builder /app/packages/web-next/public ./public
-COPY --from=builder /app/packages/web-next/node_modules ./node_modules
-COPY --from=builder /app/packages/web-next/package.json ./
+ENV NODE_ENV=production
+COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/package-lock.json ./package-lock.json
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/packages/shared/package.json ./packages/shared/package.json
+COPY --from=builder /app/packages/shared/dist ./packages/shared/dist
+COPY --from=builder /app/packages/web-next/.next ./packages/web-next/.next
+COPY --from=builder /app/packages/web-next/next.config.mjs ./packages/web-next/next.config.mjs
+COPY --from=builder /app/packages/web-next/package.json ./packages/web-next/package.json
+COPY --from=builder /app/packages/web-next/public ./packages/web-next/public
 EXPOSE 3000
-CMD ["npx", "next", "start", "-p", "3000"]
+CMD ["npm", "run", "start", "-w", "packages/web-next", "--", "-p", "3000"]

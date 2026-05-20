@@ -5,6 +5,7 @@ This repository is deployed on a single Ubuntu host with:
 - local `nginx`
 - `systemd` for API and web
 - Docker for PostgreSQL and Redis
+- Prebuilt GHCR images for the API and desktop web containers
 - desktop web on a production Next.js server
 - optional localhost-only Next dev server for remote debugging over SSH
 
@@ -63,6 +64,25 @@ sudo docker compose up -d postgres redis
 Notes:
 
 - Redis is bound to loopback and requires a password from `.env`
+- The production compose profile can also run the API and desktop web from prebuilt images:
+
+```bash
+sudo docker compose --profile production pull api web
+sudo docker compose --profile production up -d postgres redis api web
+```
+
+By default these services use:
+
+- `ghcr.io/zai-org/synapse-api:${SYNAPSE_IMAGE_TAG:-latest}`
+- `ghcr.io/zai-org/synapse-web:${SYNAPSE_IMAGE_TAG:-latest}`
+
+Set `SYNAPSE_IMAGE_TAG`, `SYNAPSE_API_IMAGE`, or `SYNAPSE_WEB_IMAGE` in `.env` to pin a release or use a different registry.
+
+If you need to build the application images locally instead of pulling from GHCR, use the build override:
+
+```bash
+sudo docker compose -f docker-compose.yml -f docker-compose.build.yml --profile production up -d --build postgres redis api web
+```
 
 ## 4. Application dependencies
 

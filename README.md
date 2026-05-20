@@ -192,6 +192,7 @@ This repository currently ships with a self-hosting path centered on a single Ub
 - `systemd` for the API and desktop web services
 - `nginx` as the public entrypoint
 - Dockerized PostgreSQL and Redis for local infrastructure
+- prebuilt GHCR images for optional containerized API and desktop web services
 - desktop web served from `packages/web-next`
 - mobile web exported as static assets from `packages/mobile-app`
 
