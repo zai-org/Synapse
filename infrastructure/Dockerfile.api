@@ -3,14 +3,16 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 COPY packages/shared/package.json packages/shared/
 COPY packages/api/package.json packages/api/
-RUN npm ci --workspace=packages/shared --workspace=packages/api
+# CPU runtime files are bundled by onnxruntime-node; skip optional CUDA provider downloads.
+RUN ONNXRUNTIME_NODE_INSTALL=skip ONNXRUNTIME_NODE_INSTALL_CUDA=skip \
+  npm ci --workspace=packages/shared --workspace=packages/api
 COPY tsconfig.base.json ./
 COPY packages/shared/ packages/shared/
 COPY packages/api/ packages/api/
-RUN npx tsc -b packages/shared
+RUN npm run build -w packages/shared && npm run build -w packages/api
 
 FROM node:20-alpine
 WORKDIR /app
 COPY --from=builder /app/ ./
 EXPOSE 3001
-CMD ["npx", "tsx", "packages/api/src/index.ts"]
+CMD ["node", "packages/api/dist/index.js"]

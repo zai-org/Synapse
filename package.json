@@ -13,7 +13,7 @@
     "dev:daemon": "npm run dev -w packages/remote-agent-daemon",
     "dev:web": "npm run dev -w packages/web-next",
     "dev:mock-chat": "node .workbuddy/mock-chat-completions-server.cjs",
-    "prepare": "git config core.hooksPath .githooks",
+    "prepare": "(command -v git >/dev/null 2>&1 && git rev-parse --git-dir >/dev/null 2>&1 && git config core.hooksPath .githooks) || true",
     "format": "node scripts/format-files.mjs --all",
     "format:check": "node scripts/format-files.mjs --all --check",
     "format:staged": "lint-staged",

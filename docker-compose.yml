@@ -39,9 +39,7 @@ services:
       retries: 5
 
   api:
-    build:
-      context: .
-      dockerfile: infrastructure/Dockerfile.api
+    image: ${SYNAPSE_API_IMAGE:-ghcr.io/zai-org/synapse-api}:${SYNAPSE_IMAGE_TAG:-latest}
     container_name: synapse-api
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-synapse}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-synapse}
@@ -68,9 +66,7 @@ services:
       - production
 
   web:
-    build:
-      context: .
-      dockerfile: infrastructure/Dockerfile.web
+    image: ${SYNAPSE_WEB_IMAGE:-ghcr.io/zai-org/synapse-web}:${SYNAPSE_IMAGE_TAG:-latest}
     container_name: synapse-web
     environment:
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
