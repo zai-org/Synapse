@@ -210,7 +210,7 @@ async function requireMemorySpaceWritePermission(
   >,
   errorMessage: string
 ) {
-  const workspaceMemberId = (request as any).workspaceMember?.id as
+  const workspaceMemberId = request.workspaceMember?.id as
     | string
     | undefined
   const { workspaceId } = request.params as { workspaceId: string }

@@ -6,12 +6,12 @@ export async function workspaceMiddleware(
   request: FastifyRequest,
   reply: FastifyReply
 ) {
-  const workspaceId = (request.params as any).workspaceId
+  const workspaceId = (request.params as { workspaceId?: string }).workspaceId
   if (!workspaceId) {
     return reply.status(400).send({ error: "Workspace ID is required" })
   }
 
-  const user = (request as any).user
+  const user = request.user
   if (!user) {
     return reply.status(401).send({ error: "Authentication required" })
   }
@@ -23,7 +23,7 @@ export async function workspaceMiddleware(
     .where("user_id", "=", user.userId)
     .executeTakeFirst()
 
-  ;(request as any).workspaceMember = member ?? null
+  request.workspaceMember = member ?? null
 
   const allowed = await requireRequestAction(
     request,

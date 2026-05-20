@@ -244,7 +244,7 @@ export function registerSkillRoutes(app: FastifyInstance) {
       if (!allowed) return
 
       const body = publishSkillSchema.parse(request.body)
-      const user = (request as any).user
+      const user = request.user
       const skill = await publishMarketplaceSkill({
         ...body,
         authorUserId: user?.id || user?.userId,
@@ -268,7 +268,7 @@ export function registerSkillRoutes(app: FastifyInstance) {
         if (!allowed) return
 
         const body = importMarketplaceSkillSchema.parse(request.body)
-        const user = (request as any).user
+        const user = request.user
         const skill = await importMarketplaceMirrorSkill({
           ...body,
           authorUserId: user?.id || user?.userId,
@@ -293,7 +293,7 @@ export function registerSkillRoutes(app: FastifyInstance) {
         if (!allowed) return
 
         const { skillId } = request.params as { skillId: string }
-        const user = (request as any).user
+        const user = request.user
         const skill = await refreshMarketplaceSkill({
           skillId,
           authorUserId: user?.id || user?.userId,
@@ -354,7 +354,7 @@ export function registerSkillRoutes(app: FastifyInstance) {
         if (!allowed) return
 
         const body = installSkillSchema.parse(request.body)
-        const workspaceMemberId = (request as any).workspaceMember?.id as string
+        const workspaceMemberId = request.workspaceMember?.id as string
         const skill = await installMarketplaceSkill({
           workspaceId,
           marketSkillId: body.marketSkillId,
@@ -384,7 +384,7 @@ export function registerSkillRoutes(app: FastifyInstance) {
         if (!allowed) return
 
         const body = createWorkspaceSkillSchema.parse(request.body)
-        const workspaceMemberId = (request as any).workspaceMember?.id as string
+        const workspaceMemberId = request.workspaceMember?.id as string
         const skill = await createWorkspaceSkill({
           workspaceId,
           name: body.name,
@@ -562,7 +562,7 @@ export function registerSkillRoutes(app: FastifyInstance) {
         if (!allowed) return
 
         const body = skillAccessGrantSchema.parse(request.body)
-        const workspaceMemberId = (request as any).workspaceMember?.id as string
+        const workspaceMemberId = request.workspaceMember?.id as string
         const grant = await grantInstalledSkillAccess({
           workspaceId,
           installedSkillId,

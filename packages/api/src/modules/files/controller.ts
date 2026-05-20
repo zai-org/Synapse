@@ -63,7 +63,7 @@ export async function filesUploadController(app: FastifyInstance) {
     Params: { workspaceId: string }
   }>("/workspaces/:workspaceId/files", async (request, reply) => {
     const { workspaceId } = request.params
-    const userId = (request as any).user!.userId
+    const userId = request.user!.userId
 
     let filePart: Awaited<ReturnType<typeof request.file>> | null = null
     let originInput: FileCreateOriginInput | null = null
@@ -132,7 +132,7 @@ export async function filesReadController(app: FastifyInstance) {
   app.get<{
     Params: { fileId: string }
   }>("/files/:fileId/info", async (request, reply) => {
-    const userId = (request as any).user!.userId
+    const userId = request.user!.userId
     const detail = await getFileDetail(request.params.fileId)
     if (!detail) {
       return reply.status(404).send({ error: "File not found" })
@@ -152,7 +152,7 @@ export async function filesReadController(app: FastifyInstance) {
   app.get<{
     Params: { fileId: string }
   }>("/files/:fileId/parses/latest", async (request, reply) => {
-    const userId = (request as any).user!.userId
+    const userId = request.user!.userId
     const detail = await getFileDetail(request.params.fileId)
     if (!detail) {
       return reply.status(404).send({ error: "File not found" })
@@ -177,7 +177,7 @@ export async function filesReadController(app: FastifyInstance) {
   app.post<{
     Params: { fileId: string }
   }>("/files/:fileId/parses", async (request, reply) => {
-    const userId = (request as any).user!.userId
+    const userId = request.user!.userId
     const detail = await getFileDetail(request.params.fileId)
     if (!detail) {
       return reply.status(404).send({ error: "File not found" })
@@ -207,7 +207,7 @@ export async function filesReadController(app: FastifyInstance) {
   app.get<{
     Params: { fileId: string }
   }>("/files/:fileId", async (request, reply) => {
-    const userId = (request as any).user!.userId
+    const userId = request.user!.userId
     const info = await getFileRecord(request.params.fileId)
     if (!info) {
       return reply.status(404).send({ error: "File not found" })

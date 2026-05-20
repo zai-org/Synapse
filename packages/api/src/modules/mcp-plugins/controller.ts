@@ -249,7 +249,7 @@ export function registerMcpPluginRoutes(app: FastifyInstance) {
           bindingKey: string
         }
         const body = startAuthSchema.parse(request.body || {})
-        const workspaceMember = (request as any).workspaceMember
+        const workspaceMember = request.workspaceMember
         const result = await startPluginAuthSession({
           workspaceId,
           pluginId,
@@ -283,7 +283,7 @@ export function registerMcpPluginRoutes(app: FastifyInstance) {
           workspaceId: string
           sessionId: string
         }
-        const workspaceMember = (request as any).workspaceMember
+        const workspaceMember = request.workspaceMember
         reply.send({
           session: await getPluginAuthSession(
             sessionId,
@@ -314,7 +314,7 @@ export function registerMcpPluginRoutes(app: FastifyInstance) {
           workspaceId: string
           sessionId: string
         }
-        const workspaceMember = (request as any).workspaceMember
+        const workspaceMember = request.workspaceMember
         reply.send(
           await inspectPluginAuthSession({
             workspaceId,
@@ -471,7 +471,7 @@ export function registerMcpPluginRoutes(app: FastifyInstance) {
           lifecycleScope: body.lifecycleScope,
           configData: body.configData,
           authSessionIds: body.authSessionIds,
-          installedByWorkspaceMemberId: (request as any).workspaceMember!.id,
+          installedByWorkspaceMemberId: request.workspaceMember!.id,
         })
         reply.status(201).send(installation)
       } catch (error) {
@@ -516,7 +516,7 @@ export function registerMcpPluginRoutes(app: FastifyInstance) {
 
         const installation = await updateInstallation(installId, {
           ...body,
-          updatedByWorkspaceMemberId: (request as any).workspaceMember!.id,
+          updatedByWorkspaceMemberId: request.workspaceMember!.id,
         })
         reply.send(installation)
       } catch (error) {
@@ -598,7 +598,7 @@ export function registerMcpPluginRoutes(app: FastifyInstance) {
           accessTarget: body.accessTarget,
           conversationTypeMaskOverride: body.conversationTypeMaskOverride,
           reason: body.reason,
-          grantedByWorkspaceMemberId: (request as any).workspaceMember!.id,
+          grantedByWorkspaceMemberId: request.workspaceMember!.id,
         })
 
         reply.status(201).send({ grant })

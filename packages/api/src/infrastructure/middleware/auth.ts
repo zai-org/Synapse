@@ -5,11 +5,11 @@ import { authenticateRequestSession } from "../../modules/auth/service.js"
 async function attachAuthenticatedRequest(request: FastifyRequest) {
   const authenticated = await authenticateRequestSession(request)
   if (!authenticated) return null
-  ;(request as any).user = {
+  request.user = {
     userId: authenticated.user.id,
     email: authenticated.user.email,
   }
-  ;(request as any).authSession = authenticated.session
+  request.authSession = authenticated.session
 
   return authenticated
 }
@@ -36,5 +36,5 @@ export async function optionalAuth(request: FastifyRequest) {
 }
 
 export function getUserId(request: FastifyRequest): string {
-  return (request as any).user?.userId
+  return request.user?.userId ?? ""
 }

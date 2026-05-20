@@ -15,11 +15,11 @@ export function auditMiddleware(app: FastifyInstance) {
         await db
           .insertInto("audit_logs")
           .values({
-            workspace_id: (request.params as any)?.workspaceId || null,
-            user_id: (request as any).user?.userId || null,
+            workspace_id: (request.params as { workspaceId?: string })?.workspaceId || null,
+            user_id: request.user?.userId || null,
             action,
             resource_type: deriveResourceType(request.url),
-            resource_id: (request.params as any)?.id || null,
+            resource_id: (request.params as { id?: string })?.id || null,
             details: {
               method: request.method,
               url: request.url,

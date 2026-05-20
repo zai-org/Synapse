@@ -43,7 +43,7 @@ export function registerPlatformRoutes(app: FastifyInstance) {
   const authHook = { preHandler: [authMiddleware] }
 
   app.get("/api/v1/platform/navigation", authHook, async (request, reply) => {
-    const userId = (request as any).user!.userId
+    const userId = request.user!.userId
     const canManagePlatform = await canPlatformPermission(userId)
 
     return reply.send({
@@ -86,7 +86,7 @@ export function registerPlatformRoutes(app: FastifyInstance) {
       const accessBinding = await grantPlatformAccess({
         userId: parsed.data.userId,
         accessKey: parsed.data.accessKey as PlatformAccessKey,
-        assignedByUserId: (request as any).user!.userId,
+        assignedByUserId: request.user!.userId,
       })
       return reply.status(201).send(accessBinding)
     } catch (err: any) {

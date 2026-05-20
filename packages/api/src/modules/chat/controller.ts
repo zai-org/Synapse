@@ -149,7 +149,7 @@ const resolveInteractionSchema = z.union([
 ])
 
 function getRequestUserId(request: any) {
-  return (request as any).user!.userId as string
+  return request.user!.userId as string
 }
 
 async function resolveRequestWorkspaceMemberId(

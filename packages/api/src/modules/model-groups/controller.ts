@@ -250,7 +250,7 @@ async function requireWorkspaceMemberOwnedGroup(
   request: FastifyRequest<{ Params: { workspaceId: string; groupId: string } }>,
   reply: FastifyReply
 ) {
-  const workspaceMemberId = (request as any).workspaceMember?.id as
+  const workspaceMemberId = request.workspaceMember?.id as
     | string
     | undefined
   if (!workspaceMemberId) {
@@ -313,7 +313,7 @@ export function registerModelGroupRoutes(app: FastifyInstance) {
 
         const { workspaceId } = request.params as { workspaceId: string }
         const body = createGroupSchema.parse(request.body)
-        const workspaceMemberId = (request as any).workspaceMember?.id as string
+        const workspaceMemberId = request.workspaceMember?.id as string
         const group = await createModelGroup({
           ...body,
           ownerType: "workspace",
@@ -348,7 +348,7 @@ export function registerModelGroupRoutes(app: FastifyInstance) {
         )
         if (!group) return
 
-        const workspaceMemberId = (request as any).workspaceMember?.id as string
+        const workspaceMemberId = request.workspaceMember?.id as string
         const groupAllowed = await requireModelGroupPermission(
           workspaceMemberId,
           group.id,
@@ -387,7 +387,7 @@ export function registerModelGroupRoutes(app: FastifyInstance) {
         )
         if (!scopedGroup) return
 
-        const workspaceMemberId = (request as any).workspaceMember?.id as string
+        const workspaceMemberId = request.workspaceMember?.id as string
         const groupAllowed = await requireModelGroupPermission(
           workspaceMemberId,
           scopedGroup.id,
@@ -428,7 +428,7 @@ export function registerModelGroupRoutes(app: FastifyInstance) {
         )
         if (!scopedGroup) return
 
-        const workspaceMemberId = (request as any).workspaceMember?.id as string
+        const workspaceMemberId = request.workspaceMember?.id as string
         const groupAllowed = await requireModelGroupPermission(
           workspaceMemberId,
           scopedGroup.id,
@@ -468,7 +468,7 @@ export function registerModelGroupRoutes(app: FastifyInstance) {
         )
         if (!group) return
 
-        const workspaceMemberId = (request as any).workspaceMember?.id as string
+        const workspaceMemberId = request.workspaceMember?.id as string
         const groupAllowed = await requireModelGroupPermission(
           workspaceMemberId,
           group.id,
@@ -508,7 +508,7 @@ export function registerModelGroupRoutes(app: FastifyInstance) {
         )
         if (!group) return
 
-        const workspaceMemberId = (request as any).workspaceMember?.id as string
+        const workspaceMemberId = request.workspaceMember?.id as string
         const groupAllowed = await requireModelGroupPermission(
           workspaceMemberId,
           group.id,
@@ -552,7 +552,7 @@ export function registerModelGroupRoutes(app: FastifyInstance) {
         )
         if (!group) return
 
-        const workspaceMemberId = (request as any).workspaceMember?.id as string
+        const workspaceMemberId = request.workspaceMember?.id as string
         const groupAllowed = await requireModelGroupPermission(
           workspaceMemberId,
           group.id,
@@ -593,7 +593,7 @@ export function registerModelGroupRoutes(app: FastifyInstance) {
         )
         if (!group) return
 
-        const workspaceMemberId = (request as any).workspaceMember?.id as string
+        const workspaceMemberId = request.workspaceMember?.id as string
         const groupAllowed = await requireModelGroupPermission(
           workspaceMemberId,
           group.id,
@@ -637,7 +637,7 @@ export function registerModelGroupRoutes(app: FastifyInstance) {
         )
         if (!group) return
 
-        const workspaceMemberId = (request as any).workspaceMember?.id as string
+        const workspaceMemberId = request.workspaceMember?.id as string
         const groupAllowed = await requireModelGroupPermission(
           workspaceMemberId,
           group.id,
@@ -679,7 +679,7 @@ export function registerModelGroupRoutes(app: FastifyInstance) {
         )
         if (!group) return
 
-        const workspaceMemberId = (request as any).workspaceMember?.id as string
+        const workspaceMemberId = request.workspaceMember?.id as string
         const groupAllowed = await requireModelGroupPermission(
           workspaceMemberId,
           group.id,
@@ -720,7 +720,7 @@ export function registerModelGroupRoutes(app: FastifyInstance) {
         )
         if (!group) return
 
-        const workspaceMemberId = (request as any).workspaceMember?.id as string
+        const workspaceMemberId = request.workspaceMember?.id as string
         const groupAllowed = await requireModelGroupPermission(
           workspaceMemberId,
           group.id,
@@ -941,7 +941,7 @@ export function registerModelGroupRoutes(app: FastifyInstance) {
         )
         if (!group) return
 
-        const userId = (request as any).user.userId
+        const userId = request.user.userId
         const groupAllowed = await requireModelGroupPermission(
           userId,
           group.id,
@@ -979,7 +979,7 @@ export function registerModelGroupRoutes(app: FastifyInstance) {
         )
         if (!group) return
 
-        const userId = (request as any).user.userId
+        const userId = request.user.userId
         const groupAllowed = await requireModelGroupPermission(
           userId,
           group.id,
@@ -1101,7 +1101,7 @@ export function registerModelGroupRoutes(app: FastifyInstance) {
         )
         if (!group) return
 
-        const userId = (request as any).user.userId
+        const userId = request.user.userId
         const groupAllowed = await requireModelGroupPermission(
           userId,
           group.id,
@@ -1141,7 +1141,7 @@ export function registerModelGroupRoutes(app: FastifyInstance) {
         )
         if (!group) return
 
-        const userId = (request as any).user.userId
+        const userId = request.user.userId
         const groupAllowed = await requireModelGroupPermission(
           userId,
           group.id,
@@ -1180,7 +1180,7 @@ export function registerModelGroupRoutes(app: FastifyInstance) {
         )
         if (!group) return
 
-        const userId = (request as any).user.userId
+        const userId = request.user.userId
         const groupAllowed = await requireModelGroupPermission(
           userId,
           group.id,
@@ -1232,7 +1232,7 @@ export function registerModelGroupRoutes(app: FastifyInstance) {
     { preHandler: wsPreHandler },
     async (request: FastifyRequest, reply: FastifyReply) => {
       try {
-        const workspaceMemberId = (request as any).workspaceMember?.id as string
+        const workspaceMemberId = request.workspaceMember?.id as string
         const groups =
           await listWorkspaceMemberOwnedModelGroups(workspaceMemberId)
         return reply.send({ groups })
@@ -1248,7 +1248,7 @@ export function registerModelGroupRoutes(app: FastifyInstance) {
     async (request: FastifyRequest, reply: FastifyReply) => {
       try {
         const body = createGroupSchema.parse(request.body)
-        const workspaceMemberId = (request as any).workspaceMember?.id as string
+        const workspaceMemberId = request.workspaceMember?.id as string
         const group = await createModelGroup({
           ...body,
           ownerType: "workspace_member",
@@ -1295,7 +1295,7 @@ export function registerModelGroupRoutes(app: FastifyInstance) {
         )
         if (!group) return
 
-        const workspaceMemberId = (request as any).workspaceMember?.id as string
+        const workspaceMemberId = request.workspaceMember?.id as string
         const groupAllowed = await requireModelGroupPermission(
           workspaceMemberId,
           group.id,
@@ -1329,7 +1329,7 @@ export function registerModelGroupRoutes(app: FastifyInstance) {
         )
         if (!group) return
 
-        const workspaceMemberId = (request as any).workspaceMember?.id as string
+        const workspaceMemberId = request.workspaceMember?.id as string
         const groupAllowed = await requireModelGroupPermission(
           workspaceMemberId,
           group.id,
@@ -1385,7 +1385,7 @@ export function registerModelGroupRoutes(app: FastifyInstance) {
         const body = issueGrantSchema.parse(request.body)
         const grant = await issueModelGroupGrant(group.id, {
           ...body,
-          grantedByWorkspaceMemberId: (request as any).workspaceMember
+          grantedByWorkspaceMemberId: request.workspaceMember
             ?.id as string,
         })
         return reply.status(201).send({ grant })
@@ -1433,7 +1433,7 @@ export function registerModelGroupRoutes(app: FastifyInstance) {
         const body = addItemSchema.parse(request.body)
         const item = await addModelItem(group.id, {
           ...body,
-          installedByWorkspaceMemberId: (request as any).workspaceMember
+          installedByWorkspaceMemberId: request.workspaceMember
             ?.id as string,
         })
         return reply.status(201).send({ item })

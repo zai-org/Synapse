@@ -46,7 +46,7 @@ export async function resolveWorkspaceAccessSubject(
 }
 
 export function getRequestUserId(request: FastifyRequest): string {
-  const userId = (request as any).user?.userId as string | undefined
+  const userId = request.user?.userId as string | undefined
   if (!userId) {
     throw new Error("Authenticated user is missing from request")
   }
@@ -60,7 +60,7 @@ export function getRequestUserSubject(request: FastifyRequest): AccessSubject {
 export function getRequestAccessSubject(
   request: FastifyRequest
 ): AccessSubject {
-  const workspaceMemberId = (request as any).workspaceMember?.id as
+  const workspaceMemberId = request.workspaceMember?.id as
     | string
     | undefined
   if (workspaceMemberId) {
