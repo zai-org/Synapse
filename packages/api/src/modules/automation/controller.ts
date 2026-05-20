@@ -314,7 +314,7 @@ export default async function automationController(app: FastifyInstance) {
       if (!allowed) return
 
       const body = eventSourceSchema.parse(request.body)
-      const workspaceMemberId = (request as any).workspaceMember!.id as string
+      const workspaceMemberId = request.workspaceMember!.id as string
       const source = await createAutomationEventSource(
         workspaceId,
         { kind: "workspace_member", workspaceMemberId },
@@ -390,7 +390,7 @@ export default async function automationController(app: FastifyInstance) {
       if (!allowed) return
 
       const body = accessGrantSchema.parse(request.body || {})
-      const workspaceMemberId = (request as any).workspaceMember!.id as string
+      const workspaceMemberId = request.workspaceMember!.id as string
       const grant = await grantAutomationEventSourceAccess({
         workspaceId,
         eventSourceId,
@@ -450,7 +450,7 @@ export default async function automationController(app: FastifyInstance) {
       )
       if (!allowed) return
 
-      const workspaceMemberId = (request as any).workspaceMember!.id as string
+      const workspaceMemberId = request.workspaceMember!.id as string
       await revokeAutomationEventSourceAccess({
         workspaceId,
         eventSourceId,
@@ -502,7 +502,7 @@ export default async function automationController(app: FastifyInstance) {
       if (!allowed) return
 
       const body = updateEventSourceSchema.parse(request.body)
-      const workspaceMemberId = (request as any).workspaceMember!.id as string
+      const workspaceMemberId = request.workspaceMember!.id as string
       return updateAutomationEventSource(
         workspaceId,
         eventSourceId,
@@ -529,7 +529,7 @@ export default async function automationController(app: FastifyInstance) {
       )
       if (!allowed) return
 
-      const workspaceMemberId = (request as any).workspaceMember!.id as string
+      const workspaceMemberId = request.workspaceMember!.id as string
       await archiveAutomationEventSource(workspaceId, eventSourceId, {
         workspaceMemberId,
       })
@@ -628,7 +628,7 @@ export default async function automationController(app: FastifyInstance) {
           issues,
         })
       }
-      const workspaceMemberId = (request as any).workspaceMember!.id as string
+      const workspaceMemberId = request.workspaceMember!.id as string
       const automation = await createAutomationRule(
         workspaceId,
         { kind: "workspace_member", workspaceMemberId },
@@ -681,7 +681,7 @@ export default async function automationController(app: FastifyInstance) {
       if (!allowed) return
 
       const body = updateAutomationSchema.parse(request.body)
-      const workspaceMemberId = (request as any).workspaceMember!.id as string
+      const workspaceMemberId = request.workspaceMember!.id as string
       try {
         const automation = await updateAutomationRule(
           workspaceId,
@@ -722,7 +722,7 @@ export default async function automationController(app: FastifyInstance) {
       )
       if (!allowed) return
 
-      const workspaceMemberId = (request as any).workspaceMember!.id as string
+      const workspaceMemberId = request.workspaceMember!.id as string
       await deleteAutomationRule(workspaceId, automationId, {
         workspaceMemberId,
       })
@@ -784,7 +784,7 @@ export default async function automationController(app: FastifyInstance) {
       if (!allowed) return
 
       const body = createWebhookEndpointSchema.parse(request.body)
-      const workspaceMemberId = (request as any).workspaceMember!.id as string
+      const workspaceMemberId = request.workspaceMember!.id as string
       const created = await createAutomationWebhookEndpoint(
         workspaceId,
         workspaceMemberId,

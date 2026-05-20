@@ -1476,8 +1476,8 @@ export function registerRelayRoutes(app: FastifyInstance) {
 
         const { workspaceId } = request.params as WorkspaceParams
         const body = createPairingSchema.parse(request.body)
-        const userId = (request as any).user.userId as string
-        const workspaceMemberId = (request as any).workspaceMember?.id as
+        const userId = request.user.userId as string
+        const workspaceMemberId = request.workspaceMember?.id as
           | string
           | undefined
         if (!workspaceMemberId) {
@@ -1696,7 +1696,7 @@ export function registerRelayRoutes(app: FastifyInstance) {
           accessTarget: body.accessTarget,
           conversationTypeMaskOverride: body.conversationTypeMaskOverride,
           reason: body.reason,
-          grantedByWorkspaceMemberId: (request as any).workspaceMember!.id,
+          grantedByWorkspaceMemberId: request.workspaceMember!.id,
         })
 
         reply.status(201).send({ grant })

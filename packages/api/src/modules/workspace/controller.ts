@@ -136,7 +136,7 @@ export async function handleCreateWorkspace(
   const workspace = await createWorkspace({
     name: parsed.data.name,
     description: parsed.data.description,
-    userId: (request as any).user!.userId,
+    userId: request.user!.userId,
   })
 
   return reply.status(201).send(workspace)
@@ -146,7 +146,7 @@ export async function handleListWorkspaces(
   request: FastifyRequest,
   reply: FastifyReply
 ) {
-  const workspaces = await listUserWorkspaces((request as any).user!.userId)
+  const workspaces = await listUserWorkspaces(request.user!.userId)
   return reply.send({ data: workspaces })
 }
 
@@ -329,8 +329,8 @@ export async function handleGetWorkspaceChiefActorPreference(
   )
   if (!allowed) return
 
-  const userId = (request as any).user!.userId
-  const workspaceMemberId = (request as any).workspaceMember?.id as
+  const userId = request.user!.userId
+  const workspaceMemberId = request.workspaceMember?.id as
     | string
     | undefined
   if (!workspaceMemberId) {
@@ -365,7 +365,7 @@ export async function handleUpdateWorkspaceChiefActorPreference(
   }
 
   try {
-    const workspaceMemberId = (request as any).workspaceMember?.id as
+    const workspaceMemberId = request.workspaceMember?.id as
       | string
       | undefined
     if (!workspaceMemberId) {
@@ -375,7 +375,7 @@ export async function handleUpdateWorkspaceChiefActorPreference(
     }
     const preference = await updateWorkspaceChiefActorPreference(
       request.params.workspaceId,
-      (request as any).user!.userId,
+      request.user!.userId,
       parsed.data.chiefActorId
     )
     return reply.send(preference)
@@ -392,7 +392,7 @@ export async function handleGetWorkspaceNavigation(
   request: FastifyRequest<{ Params: WorkspaceParams }>,
   reply: FastifyReply
 ) {
-  const userId = (request as any).user!.userId
+  const userId = request.user!.userId
   const { workspaceId } = request.params
 
   const [canViewWorkspace, canAccessWorkspaceModels, canAccessWorkspaceAccess] =
@@ -436,7 +436,7 @@ export async function handleGrantWorkspaceAccess(
       workspaceId: request.params.workspaceId,
       workspaceMemberId: parsed.data.workspaceMemberId,
       accessKey: parsed.data.accessKey as WorkspaceAccessKey,
-      assignedByWorkspaceMemberId: (request as any).workspaceMember!.id,
+      assignedByWorkspaceMemberId: request.workspaceMember!.id,
     })
     return reply.status(201).send(accessBinding)
   } catch (err: any) {
@@ -510,7 +510,7 @@ export async function handleCreateInvite(
 
   const invite = await createInvite({
     workspaceId: request.params.workspaceId,
-    createdByWorkspaceMemberId: (request as any).workspaceMember!.id,
+    createdByWorkspaceMemberId: request.workspaceMember!.id,
     trustLevel: parsed.data.trustLevel,
     maxUses: parsed.data.maxUses,
     expiresAt: parsed.data.expiresAt,
@@ -583,7 +583,7 @@ export async function handleRedeemInvite(
   request: FastifyRequest<{ Params: TokenParams }>,
   reply: FastifyReply
 ) {
-  const userId = (request as any).user!.userId
+  const userId = request.user!.userId
   try {
     const result = await redeemInvite(request.params.token, userId)
     return reply.send(result)

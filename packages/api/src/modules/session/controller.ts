@@ -67,7 +67,7 @@ async function requireSessionConversationPermission(
     return null
   }
 
-  const workspaceMemberId = (request as any).workspaceMember?.id as
+  const workspaceMemberId = request.workspaceMember?.id as
     | string
     | undefined
   if (!workspaceMemberId) {
@@ -111,7 +111,7 @@ export async function sessionController(app: FastifyInstance) {
       }
       const normalizedChannelType: SessionsChannelType =
         channelType === "im" ? "bridge" : (channelType ?? "web")
-      const workspaceMemberId = (request as any).workspaceMember!.id as string
+      const workspaceMemberId = request.workspaceMember!.id as string
 
       const allowed = await requireActorPermission(
         request,
@@ -171,7 +171,7 @@ export async function sessionController(app: FastifyInstance) {
       const { contentBlocks } = sendMessageSchema.parse(request.body) as {
         contentBlocks: CanonicalContentBlock[]
       }
-      const workspaceMemberId = (request as any).workspaceMember!.id as string
+      const workspaceMemberId = request.workspaceMember!.id as string
 
       const session = await requireSessionConversationPermission(
         request,
@@ -258,8 +258,8 @@ export async function sessionController(app: FastifyInstance) {
     async (request, reply) => {
       const { workspaceId, sessionId } = request.params
       const { itemId } = retrySessionSchema.parse(request.body || {})
-      const userId = (request as any).user!.userId
-      const workspaceMemberId = (request as any).workspaceMember!.id as string
+      const userId = request.user!.userId
+      const workspaceMemberId = request.workspaceMember!.id as string
 
       const session = await requireSessionConversationPermission(
         request,

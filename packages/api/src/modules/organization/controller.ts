@@ -144,7 +144,7 @@ export async function organizationController(app: FastifyInstance) {
     try {
       const actor = await service.createActor({
         workspaceId: (request.params as WorkspaceParams).workspaceId,
-        createdByWorkspaceMemberId: (request as any).workspaceMember!.id,
+        createdByWorkspaceMemberId: request.workspaceMember!.id,
         ...parsed.data,
       })
       return reply.status(201).send(actor)
@@ -159,7 +159,7 @@ export async function organizationController(app: FastifyInstance) {
     const { workspaceId } = request.params as WorkspaceParams
     const actors = await service.listActors(
       workspaceId,
-      workspaceMemberSubject((request as any).workspaceMember!.id)
+      workspaceMemberSubject(request.workspaceMember!.id)
     )
     return reply.send(actors)
   })
@@ -168,7 +168,7 @@ export async function organizationController(app: FastifyInstance) {
     const { workspaceId } = request.params as WorkspaceParams
     const tree = await service.getFullOrgTree(
       workspaceId,
-      workspaceMemberSubject((request as any).workspaceMember!.id)
+      workspaceMemberSubject(request.workspaceMember!.id)
     )
     return reply.send(tree)
   })
@@ -218,7 +218,7 @@ export async function organizationController(app: FastifyInstance) {
       const result = await service.installActorPackage({
         workspaceId,
         packageId,
-        createdByWorkspaceMemberId: (request as any).workspaceMember!.id,
+        createdByWorkspaceMemberId: request.workspaceMember!.id,
         name: parsed.data.name,
         title: parsed.data.title,
         parentId: parsed.data.parentId,
@@ -300,7 +300,7 @@ export async function organizationController(app: FastifyInstance) {
         parsed.data,
         {
           type: "workspace_member",
-          workspaceMemberId: (request as any).workspaceMember!.id,
+          workspaceMemberId: request.workspaceMember!.id,
           reason: "user_edit",
         }
       )

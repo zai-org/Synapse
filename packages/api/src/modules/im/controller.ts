@@ -417,7 +417,7 @@ export default async function imController(app: FastifyInstance) {
 
       const binding = await getCurrentUserWeixinBinding({
         workspaceId: request.params.workspaceId,
-        userId: (request as any).user!.userId,
+        userId: request.user!.userId,
       })
       return reply.send({ binding })
     }
@@ -451,8 +451,8 @@ export default async function imController(app: FastifyInstance) {
       if (!allowed) return
 
       const { workspaceId } = request.params
-      const workspaceMemberId = (request as any).workspaceMember?.id as string
-      const userId = (request as any).user!.userId as string
+      const workspaceMemberId = request.workspaceMember?.id as string
+      const userId = request.user!.userId as string
       const existing = await getCurrentUserWeixinBinding({
         workspaceId,
         userId,
@@ -485,7 +485,7 @@ export default async function imController(app: FastifyInstance) {
       if (!allowed) return
 
       const { workspaceId, sessionId } = request.params
-      const workspaceMemberId = (request as any).workspaceMember?.id as string
+      const workspaceMemberId = request.workspaceMember?.id as string
       const owner = getWeixinQrLoginSessionOwner({ workspaceId, sessionId })
       if (
         !owner ||
@@ -520,7 +520,7 @@ export default async function imController(app: FastifyInstance) {
       try {
         const binding = await linkCurrentUserWeixinBinding({
           workspaceId: request.params.workspaceId,
-          userId: (request as any).user!.userId,
+          userId: request.user!.userId,
         })
         return reply.send({ binding })
       } catch (error) {
@@ -555,7 +555,7 @@ export default async function imController(app: FastifyInstance) {
         const body = bindingAutoLinkSchema.parse(request.body)
         const binding = await setCurrentUserWeixinBindingAutoLink({
           workspaceId: request.params.workspaceId,
-          userId: (request as any).user!.userId,
+          userId: request.user!.userId,
           targetWorkspaceMemberId: body.workspaceMemberId,
         })
         return reply.send({ binding })

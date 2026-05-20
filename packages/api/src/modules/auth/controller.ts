@@ -247,7 +247,7 @@ export function registerAuthRoutes(app: FastifyInstance) {
           .send(
             await authService.resolveQrLoginRequest(
               body.token,
-              (request as any).user.userId
+              request.user.userId
             )
           )
       } catch (error) {
@@ -267,7 +267,7 @@ export function registerAuthRoutes(app: FastifyInstance) {
           .send(
             await authService.approveQrLoginRequest(
               body.token,
-              (request as any).user.userId,
+              request.user.userId,
               body.sessionPersistence ?? "persistent"
             )
           )
@@ -288,7 +288,7 @@ export function registerAuthRoutes(app: FastifyInstance) {
           .send(
             await authService.rejectQrLoginRequest(
               body.token,
-              (request as any).user.userId
+              request.user.userId
             )
           )
       } catch (error) {
@@ -335,7 +335,7 @@ export function registerAuthRoutes(app: FastifyInstance) {
     { preHandler: [authMiddleware] },
     async (request: FastifyRequest, reply: FastifyReply) => {
       try {
-        const currentSession = (request as any).authSession
+        const currentSession = request.authSession
         await authService.logoutCurrentSession(currentSession.id)
         clearSessionCookie(reply)
         return reply.status(204).send()
@@ -350,7 +350,7 @@ export function registerAuthRoutes(app: FastifyInstance) {
     { preHandler: [authMiddleware] },
     async (request: FastifyRequest, reply: FastifyReply) => {
       try {
-        await authService.logoutAllSessions((request as any).user.userId)
+        await authService.logoutAllSessions(request.user.userId)
         clearSessionCookie(reply)
         return reply.status(204).send()
       } catch (error) {
@@ -365,8 +365,8 @@ export function registerAuthRoutes(app: FastifyInstance) {
     async (request: FastifyRequest, reply: FastifyReply) => {
       try {
         return reply.status(200).send({
-          user: await authService.getProfile((request as any).user.userId),
-          session: (request as any).authSession,
+          user: await authService.getProfile(request.user.userId),
+          session: request.authSession,
         })
       } catch (error) {
         return handleAuthError(error, reply)
@@ -381,11 +381,11 @@ export function registerAuthRoutes(app: FastifyInstance) {
       try {
         const body = updateMeSchema.parse(request.body)
         return reply.status(200).send({
-          user: await authService.updateProfile((request as any).user.userId, {
+          user: await authService.updateProfile(request.user.userId, {
             name: body.name,
             avatarFileId: body.avatarFileId,
           }),
-          session: (request as any).authSession,
+          session: request.authSession,
         })
       } catch (error) {
         return handleAuthError(error, reply)
@@ -400,8 +400,8 @@ export function registerAuthRoutes(app: FastifyInstance) {
       try {
         return reply.status(200).send({
           sessions: await authService.listSessions(
-            (request as any).user.userId,
-            (request as any).authSession.id
+            request.user.userId,
+            request.authSession.id
           ),
         })
       } catch (error) {
@@ -416,9 +416,9 @@ export function registerAuthRoutes(app: FastifyInstance) {
     async (request: FastifyRequest, reply: FastifyReply) => {
       try {
         const params = sessionParamsSchema.parse(request.params)
-        const currentSessionId = (request as any).authSession.id as string
+        const currentSessionId = request.authSession.id as string
         await authService.revokeSessionForUser(
-          (request as any).user.userId,
+          request.user.userId,
           params.sessionId
         )
 

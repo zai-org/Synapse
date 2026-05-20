@@ -86,7 +86,7 @@ export default async function relationshipController(app: FastifyInstance) {
   }>(
     "/api/v1/workspaces/:workspaceId/me/relationship-profile",
     async (request, reply) => {
-      const userId = (request as any).user!.userId
+      const userId = request.user!.userId
       return reply.send(
         await getMemberRelationshipProfile({
           workspaceId: request.params.workspaceId,
@@ -102,7 +102,7 @@ export default async function relationshipController(app: FastifyInstance) {
   }>(
     "/api/v1/workspaces/:workspaceId/me/relationship-profile",
     async (request, reply) => {
-      const userId = (request as any).user!.userId
+      const userId = request.user!.userId
       const body = updateMemberProfileSchema.parse(request.body)
       return reply.send(
         await updateMemberRelationshipProfile({
@@ -129,7 +129,7 @@ export default async function relationshipController(app: FastifyInstance) {
         "Not allowed to manage this actor relationship profile"
       )
       if (!allowed) return
-      const userId = (request as any).user!.userId
+      const userId = request.user!.userId
       try {
         return reply.send(
           await getActorRelationshipProfile({
@@ -158,7 +158,7 @@ export default async function relationshipController(app: FastifyInstance) {
         "Not allowed to manage this actor relationship profile"
       )
       if (!allowed) return
-      const userId = (request as any).user!.userId
+      const userId = request.user!.userId
       const body = updateActorProfileSchema.parse(request.body)
       try {
         return reply.send(
@@ -192,7 +192,7 @@ export default async function relationshipController(app: FastifyInstance) {
         "Not allowed to manage this remote agent relationship profile"
       )
       if (!allowed) return
-      const userId = (request as any).user!.userId
+      const userId = request.user!.userId
       try {
         return reply.send(
           await getRemoteAgentRelationshipProfile({
@@ -221,7 +221,7 @@ export default async function relationshipController(app: FastifyInstance) {
         "Not allowed to manage this remote agent relationship profile"
       )
       if (!allowed) return
-      const userId = (request as any).user!.userId
+      const userId = request.user!.userId
       const body = updateActorProfileSchema.parse(request.body)
       try {
         return reply.send(
@@ -248,7 +248,7 @@ export default async function relationshipController(app: FastifyInstance) {
   }>(
     "/api/v1/workspaces/:workspaceId/relationship-qr/scan",
     async (request, reply) => {
-      const userId = (request as any).user!.userId
+      const userId = request.user!.userId
       const body = scanSchema.parse(request.body)
       try {
         return reply.send(
@@ -270,7 +270,7 @@ export default async function relationshipController(app: FastifyInstance) {
   }>(
     "/api/v1/workspaces/:workspaceId/identity-search",
     async (request, reply) => {
-      const userId = (request as any).user!.userId
+      const userId = request.user!.userId
       const query = identitySearchQuerySchema.parse(request.query)
       return reply.send(
         await searchRelationshipsByIdentity({
@@ -288,7 +288,7 @@ export default async function relationshipController(app: FastifyInstance) {
   }>(
     "/api/v1/workspaces/:workspaceId/identity-search/request",
     async (request, reply) => {
-      const userId = (request as any).user!.userId
+      const userId = request.user!.userId
       const body = requestRelationshipBySearchSchema.parse(request.body)
       try {
         return reply.send(
@@ -307,7 +307,7 @@ export default async function relationshipController(app: FastifyInstance) {
   app.get<{
     Params: { workspaceId: string }
   }>("/api/v1/workspaces/:workspaceId/friends", async (request, reply) => {
-    const userId = (request as any).user!.userId
+    const userId = request.user!.userId
     return reply.send(
       await listFriends({
         workspaceId: request.params.workspaceId,
@@ -321,7 +321,7 @@ export default async function relationshipController(app: FastifyInstance) {
   }>(
     "/api/v1/workspaces/:workspaceId/friend-requests",
     async (request, reply) => {
-      const userId = (request as any).user!.userId
+      const userId = request.user!.userId
       return reply.send(
         await listFriendRequests({
           workspaceId: request.params.workspaceId,
@@ -336,7 +336,7 @@ export default async function relationshipController(app: FastifyInstance) {
   }>(
     "/api/v1/workspaces/:workspaceId/friend-requests/:requestId/approve",
     async (request, reply) => {
-      const userId = (request as any).user!.userId
+      const userId = request.user!.userId
       try {
         return reply.send({
           request: await resolveFriendRequest({
@@ -357,7 +357,7 @@ export default async function relationshipController(app: FastifyInstance) {
   }>(
     "/api/v1/workspaces/:workspaceId/friend-requests/:requestId/reject",
     async (request, reply) => {
-      const userId = (request as any).user!.userId
+      const userId = request.user!.userId
       try {
         return reply.send({
           request: await resolveFriendRequest({
@@ -378,7 +378,7 @@ export default async function relationshipController(app: FastifyInstance) {
   }>(
     "/api/v1/workspaces/:workspaceId/actor-access-requests",
     async (request, reply) => {
-      const userId = (request as any).user!.userId
+      const userId = request.user!.userId
       return reply.send(
         await listActorAccessRequests({
           workspaceId: request.params.workspaceId,
@@ -393,7 +393,7 @@ export default async function relationshipController(app: FastifyInstance) {
   }>(
     "/api/v1/workspaces/:workspaceId/remote-agent-access-requests",
     async (request, reply) => {
-      const userId = (request as any).user!.userId
+      const userId = request.user!.userId
       return reply.send(
         await listRemoteAgentAccessRequests({
           workspaceId: request.params.workspaceId,
@@ -408,7 +408,7 @@ export default async function relationshipController(app: FastifyInstance) {
   }>(
     "/api/v1/workspaces/:workspaceId/actor-access-requests/:requestId/approve",
     async (request, reply) => {
-      const userId = (request as any).user!.userId
+      const userId = request.user!.userId
       try {
         return reply.send({
           request: await resolveActorAccessRequest({
@@ -429,7 +429,7 @@ export default async function relationshipController(app: FastifyInstance) {
   }>(
     "/api/v1/workspaces/:workspaceId/actor-access-requests/:requestId/reject",
     async (request, reply) => {
-      const userId = (request as any).user!.userId
+      const userId = request.user!.userId
       try {
         return reply.send({
           request: await resolveActorAccessRequest({
@@ -450,7 +450,7 @@ export default async function relationshipController(app: FastifyInstance) {
   }>(
     "/api/v1/workspaces/:workspaceId/remote-agent-access-requests/:requestId/approve",
     async (request, reply) => {
-      const userId = (request as any).user!.userId
+      const userId = request.user!.userId
       try {
         return reply.send({
           request: await resolveRemoteAgentAccessRequest({
@@ -471,7 +471,7 @@ export default async function relationshipController(app: FastifyInstance) {
   }>(
     "/api/v1/workspaces/:workspaceId/remote-agent-access-requests/:requestId/reject",
     async (request, reply) => {
-      const userId = (request as any).user!.userId
+      const userId = request.user!.userId
       try {
         return reply.send({
           request: await resolveRemoteAgentAccessRequest({
@@ -490,7 +490,7 @@ export default async function relationshipController(app: FastifyInstance) {
   app.get<{
     Params: { workspaceId: string }
   }>("/api/v1/workspaces/:workspaceId/contact-hub", async (request, reply) => {
-    const userId = (request as any).user!.userId
+    const userId = request.user!.userId
     return reply.send(
       await getContactHub({
         workspaceId: request.params.workspaceId,
@@ -504,7 +504,7 @@ export default async function relationshipController(app: FastifyInstance) {
   }>(
     "/api/v1/workspaces/:workspaceId/contact-hub/:kind/:contactId",
     async (request, reply) => {
-      const userId = (request as any).user!.userId
+      const userId = request.user!.userId
       const kind = contactKindSchema.parse(request.params.kind)
       try {
         return reply.send(
@@ -527,7 +527,7 @@ export default async function relationshipController(app: FastifyInstance) {
   }>(
     "/api/v1/workspaces/:workspaceId/direct-conversations/open",
     async (request, reply) => {
-      const userId = (request as any).user!.userId
+      const userId = request.user!.userId
       const body = openDirectSchema.parse(request.body)
       try {
         return reply.send(

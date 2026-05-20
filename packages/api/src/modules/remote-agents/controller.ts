@@ -118,7 +118,7 @@ const internalPlanApprovalInteractionSchema = z.object({
 })
 
 function getRequestUserId(request: any) {
-  return (request as any).user!.userId as string
+  return request.user!.userId as string
 }
 
 function sendServiceError(reply: FastifyReply, error: unknown) {
