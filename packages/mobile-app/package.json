@@ -18,6 +18,7 @@
     "web": "expo start --web",
     "web:export": "npm run sync:shared && npm run build:chat-worker && expo export --platform web",
     "typecheck": "tsc --noEmit",
+    "test": "node --test",
     "lint": "eslint app src",
     "lint:fix": "eslint app src --fix"
   },

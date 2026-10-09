@@ -119,7 +119,7 @@ ok "typechecks clean"
 if [ "${VERIFY_SKIP_TESTS:-0}" = "1" ]; then
   printf '\n\033[1;33m(VERIFY_SKIP_TESTS=1 — skipping test suites)\033[0m\n'
 else
-  step "test: device-protocol / shared / device-runtime / device-sdk / remote-agent-daemon / api / web-next"
+  step "test: device-protocol / shared / device-runtime / device-sdk / remote-agent-daemon / api / web-next / mobile-app"
   npm run test -w packages/device-protocol
   npm run test -w packages/shared
   npm run test -w packages/device-runtime
@@ -130,6 +130,7 @@ else
   # seams (Node 22 gates mock.module behind this flag; it only enables the API).
   ( cd packages/api && npx tsx --test --experimental-test-module-mocks --test-concurrency=4 "src/**/*.test.ts" )
   npm run test -w packages/web-next
+  ( cd packages/mobile-app && npm test )
   # Cross-language carrier-contract golden vectors (workstream F, adjudication
   # R8): run the SHARED packages/shared/src/utils/traceparent-vectors.json
   # THROUGH the Go (cua) and Rust (fs-helper) helper code, so behaviour — not

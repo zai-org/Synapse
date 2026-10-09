@@ -389,10 +389,16 @@ export function ChatComposer({
   }, [attachments])
 
   useEffect(() => {
+    // 录音状态变化不应取消附件，上传只在组件卸载时统一清理。
+    const uploadControllers = uploadControllersRef.current
     return () => {
-      uploadControllersRef.current.forEach((controller) => controller.abort())
-      uploadControllersRef.current.clear()
+      uploadControllers.forEach((controller) => controller.abort())
+      uploadControllers.clear()
+    }
+  }, [])
 
+  useEffect(() => {
+    return () => {
       if (recorderState.isRecording) {
         void recorder.stop().catch(() => undefined)
       }
