@@ -68,6 +68,8 @@ function fakeDriver(pump: EventPump): AgentDriver {
   }
   return {
     runtimeKind: RUNTIME_KIND.CLAUDE_CODE,
+    label: "Claude Code",
+    capabilities: {},
     detect: () => detected,
     createSession: async (spec): Promise<AgentSession> => ({
       runtimeKind: RUNTIME_KIND.CLAUDE_CODE,
@@ -101,6 +103,7 @@ test("F4: the detached drainEvents loop is context-free — no callback inherits
     onUserInputRequested: async () => record("onUserInputRequested"),
     onPlanApprovalRequested: async () => record("onPlanApprovalRequested"),
     onPlanUpdated: () => record("onPlanUpdated"),
+    onTurnDropped: () => record("onTurnDropped"),
     onClosed: () => record("onClosed"),
   }
 
@@ -112,13 +115,14 @@ test("F4: the detached drainEvents loop is context-free — no callback inherits
     rootDirectory: path.join(os.tmpdir(), `f4-repro-${randomUUID()}`),
     serverUrl: "http://127.0.0.1:0",
     machineKey: "machine-key",
-    initialPrompt: "hi",
     callbacks,
   })
 
   // Turn 1 starts the session inside its carrier scope — this is exactly where
   // the old `void this.drainEvents(session)` captured turn-1's ALS context.
-  await runWithCarrier({ traceparent: tp(0x11) }, () => runtime.ensureStarted())
+  await runWithCarrier({ traceparent: tp(0x11) }, () =>
+    runtime.ensureStarted("hi", "epoch-1")
+  )
 
   // Turn-1 scope has now exited. Events arrive later (as they would across many
   // turns of a long-lived session). Each callback must observe NO ambient

@@ -724,11 +724,25 @@ export const MODEL_SERVER_TOOLS = [
 export const REMOTE_AGENT_RUNTIME_KIND = {
   CLAUDE_CODE: "claude_code",
   CODEX: "codex",
+  PI: "pi",
+  OPENCODE: "opencode",
 } as const
 export const REMOTE_AGENT_RUNTIME_KINDS = [
   REMOTE_AGENT_RUNTIME_KIND.CLAUDE_CODE,
   REMOTE_AGENT_RUNTIME_KIND.CODEX,
+  REMOTE_AGENT_RUNTIME_KIND.PI,
+  REMOTE_AGENT_RUNTIME_KIND.OPENCODE,
 ] as const
+/** Display labels for remote-agent runtime kinds — lookup, not ternaries. */
+export const REMOTE_AGENT_RUNTIME_LABELS: Record<
+  (typeof REMOTE_AGENT_RUNTIME_KINDS)[number],
+  string
+> = {
+  [REMOTE_AGENT_RUNTIME_KIND.CLAUDE_CODE]: "Claude Code",
+  [REMOTE_AGENT_RUNTIME_KIND.CODEX]: "Codex CLI",
+  [REMOTE_AGENT_RUNTIME_KIND.PI]: "pi",
+  [REMOTE_AGENT_RUNTIME_KIND.OPENCODE]: "opencode",
+}
 export const REMOTE_AGENT_RUNTIME_STATE = {
   OFFLINE: "offline",
   IDLE: "idle",

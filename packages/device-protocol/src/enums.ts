@@ -70,7 +70,12 @@ export const RUNTIME_EXPOSURE_RUNTIME_STATUSES = [
 export type RuntimeExposureRuntimeStatus =
   (typeof RUNTIME_EXPOSURE_RUNTIME_STATUSES)[number]
 
-export const REMOTE_AGENT_RUNTIME_KINDS = ["claude_code", "codex"] as const
+export const REMOTE_AGENT_RUNTIME_KINDS = [
+  "claude_code",
+  "codex",
+  "pi",
+  "opencode",
+] as const
 export type RemoteAgentRuntimeKind = (typeof REMOTE_AGENT_RUNTIME_KINDS)[number]
 
 export const REMOTE_AGENT_RUNTIME_STATES = [

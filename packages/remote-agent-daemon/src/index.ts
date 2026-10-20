@@ -26,7 +26,13 @@ import type {
 } from "@synapse/device-protocol"
 import { ClaudeDriver } from "./drivers/claude-driver.js"
 import { CodexDriver } from "./drivers/codex-driver.js"
-import { registerDriver, tryGetDriver } from "./drivers/registry.js"
+import { OpencodeDriver } from "./drivers/opencode-driver.js"
+import { PiDriver } from "./drivers/pi-driver.js"
+import {
+  listDrivers,
+  registerDriver,
+  tryGetDriver,
+} from "./drivers/registry.js"
 import {
   activeWireTraceFields,
   detach,
@@ -42,11 +48,12 @@ import {
 import { ConversationTurns } from "./conversation-turns.js"
 import type {
   AgentSessionEvent,
+  DaemonRuntimeCapabilities,
   PermissionDecision,
   RuntimeCatalogEntry,
   RuntimeKind,
 } from "./drivers/types.js"
-import { RUNTIME_KIND } from "./drivers/types.js"
+import { RUNTIME_KIND, RUNTIME_KINDS } from "./drivers/types.js"
 import {
   ConversationRuntime,
   type ConversationRuntimeCallbacks,
@@ -73,6 +80,8 @@ import {
 
 registerDriver(new ClaudeDriver())
 registerDriver(new CodexDriver())
+registerDriver(new PiDriver())
+registerDriver(new OpencodeDriver())
 
 type DaemonConfig = {
   serverUrl: string
@@ -83,14 +92,6 @@ type DaemonConfig = {
 }
 
 type LogLevel = "error" | "warn" | "info" | "debug"
-
-type DaemonRuntimeCapabilities = {
-  supportsRequestUserInput?: boolean
-  supportsPlanMode?: boolean
-  supportsPersistentSession?: boolean
-  supportsCodexAppServer?: boolean
-  supportsStructuredIo?: boolean
-}
 
 const DEFAULT_HEARTBEAT_MS = 30_000
 const DEFAULT_RECONNECT_MS = 3_000
@@ -291,7 +292,7 @@ function buildBootstrapPrompt(params: {
 
 function describeRuntimeCatalogIssue(entry: RuntimeCatalogEntry) {
   const runtimeLabel =
-    entry.runtimeKind === RUNTIME_KIND.CLAUDE_CODE ? "Claude Code" : "Codex CLI"
+    tryGetDriver(entry.runtimeKind)?.label ?? entry.runtimeKind
   switch (entry.status) {
     case "missing_binary":
       return `${runtimeLabel} is not installed or not on PATH for this machine`
@@ -435,7 +436,9 @@ class DaemonSupervisor {
             )
             try {
               ws.close(4002, "heartbeat timeout")
-            } catch {}
+            } catch {
+              // best-effort close: socket may already be gone
+            }
             return
           }
           missedPongs += 1
@@ -459,12 +462,13 @@ class DaemonSupervisor {
 
         if (message?.type === "connected") {
           this.machineId = message.machineId
-          const runtimeCatalog = [
-            (
-              tryGetDriver(RUNTIME_KIND.CLAUDE_CODE) ?? new ClaudeDriver()
-            ).detect(),
-            (tryGetDriver(RUNTIME_KIND.CODEX) ?? new CodexDriver()).detect(),
-          ]
+          const runtimeCatalog = listDrivers()
+            .sort(
+              (a, b) =>
+                RUNTIME_KINDS.indexOf(a.runtimeKind) -
+                RUNTIME_KINDS.indexOf(b.runtimeKind)
+            )
+            .map((driver) => driver.detect())
           log("info", "daemon", "Server accepted machine session", {
             machineId: message.machineId,
             sessionId: message.sessionId,
@@ -484,7 +488,9 @@ class DaemonSupervisor {
           })
           try {
             ws.close(1008, message.message)
-          } catch {}
+          } catch {
+            // best-effort close: socket may already be gone
+          }
           return
         }
 
@@ -494,7 +500,9 @@ class DaemonSupervisor {
           })
           try {
             ws.close(4001, "fenced")
-          } catch {}
+          } catch {
+            // best-effort close: socket may already be gone
+          }
           return
         }
 
@@ -1179,7 +1187,9 @@ class ManagedRemoteAgent {
     for (const [conversationId, runtime] of [...this.runtimes]) {
       try {
         await runtime.close(reason)
-      } catch {}
+      } catch {
+        // best-effort close: a failing runtime must not block teardown
+      }
       this.runtimes.delete(conversationId)
     }
     // All runtimes are gone → drop every stashed carrier so the map cannot
@@ -1523,20 +1533,11 @@ class ManagedRemoteAgent {
   }
 
   private runtimeCapabilities(): DaemonRuntimeCapabilities {
-    if (this.runtimeKind === RUNTIME_KIND.CLAUDE_CODE) {
-      return {
-        supportsRequestUserInput: true,
-        supportsPlanMode: true,
-        supportsPersistentSession: true,
-        supportsStructuredIo: true,
-      }
-    }
-    return {
-      supportsRequestUserInput: true,
-      supportsPlanMode: true,
-      supportsPersistentSession: false,
-      supportsCodexAppServer: true,
-    }
+    const driver = tryGetDriver(this.runtimeKind)
+    if (driver) return driver.capabilities
+    // Unregistered kinds (never happens on a healthy daemon — every kind in
+    // RUNTIME_KINDS is registered at startup) degrade to the minimal honest set.
+    return { supportsRequestUserInput: true }
   }
 }
 

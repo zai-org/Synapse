@@ -5,7 +5,11 @@ import { useParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import { ArrowLeft, RefreshCcw, Server } from "lucide-react"
 import { RuntimeKindIcon } from "@/components/runtime-kind-icon"
-import { REMOTE_AGENT_BINDING_STATUS } from "@synapse/shared"
+import {
+  REMOTE_AGENT_BINDING_STATUS,
+  REMOTE_AGENT_RUNTIME_LABELS,
+  type RemoteAgentRuntimeKind,
+} from "@synapse/shared"
 
 import { useWorkspace } from "@/app/dashboard/workspace-provider"
 import type {
@@ -64,7 +68,7 @@ function runtimeVariant(status?: RemoteAgentRuntimeStatus) {
 }
 
 function runtimeLabel(value: string) {
-  return value === "claude_code" ? "Claude Code" : "Codex CLI"
+  return REMOTE_AGENT_RUNTIME_LABELS[value as RemoteAgentRuntimeKind] ?? value
 }
 
 function sessionStateVariant(state?: RemoteAgentRuntimeSummaryView["state"]) {

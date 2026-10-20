@@ -20,6 +20,8 @@ function buildFakeDriver(
 ): AgentDriver {
   return {
     runtimeKind,
+    label: `fake-${runtimeKind}`,
+    capabilities: {},
     detect(): RuntimeCatalogEntry {
       return { runtimeKind, status: "available", ...override }
     },

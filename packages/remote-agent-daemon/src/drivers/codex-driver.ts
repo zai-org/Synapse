@@ -22,7 +22,7 @@ import type {
   SendPromptOptions,
   SessionSpec,
 } from "./types.js"
-import { RUNTIME_KIND } from "./types.js"
+import { RUNTIME_KIND, type DaemonRuntimeCapabilities } from "./types.js"
 import { EventQueue as EventQueueBase, whichBinary } from "./async-channel.js"
 import { parseCodexJsonRpcLine } from "./codex-json-rpc-codec.js"
 import {
@@ -603,6 +603,12 @@ class CodexAgentSession implements AgentSession {
 
 export class CodexDriver implements AgentDriver {
   readonly runtimeKind = RUNTIME_KIND.CODEX
+  readonly label = "Codex CLI"
+  readonly capabilities: DaemonRuntimeCapabilities = {
+    supportsRequestUserInput: true,
+    supportsPlanMode: true,
+    supportsCodexAppServer: true,
+  }
 
   detect(): RuntimeCatalogEntry {
     const probe = detectCodexBinary()

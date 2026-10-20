@@ -209,7 +209,7 @@ export type RemoteAgentRunsStatus = "cancelled" | "completed" | "failed" | "queu
 
 export type RemoteAgentRuntimeCatalogStatus = "available" | "broken_path" | "missing_binary" | "runtime_error" | "unsupported_platform";
 
-export type RemoteAgentsRuntimeKind = "claude_code" | "codex";
+export type RemoteAgentsRuntimeKind = "claude_code" | "codex" | "opencode" | "pi";
 
 export type RuntimeAuthorizationGrantsRetention = "consume_once" | "until_revoked";
 

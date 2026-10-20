@@ -19,7 +19,7 @@ import type {
   SendPromptOptions,
   SessionSpec,
 } from "./types.js"
-import { RUNTIME_KIND } from "./types.js"
+import { RUNTIME_KIND, type DaemonRuntimeCapabilities } from "./types.js"
 import { EventQueue as EventQueueBase, whichBinary } from "./async-channel.js"
 import {
   buildPermissionResultForDecision,
@@ -333,6 +333,13 @@ class ClaudeAgentSession implements AgentSession {
 
 export class ClaudeDriver implements AgentDriver {
   readonly runtimeKind = RUNTIME_KIND.CLAUDE_CODE
+  readonly label = "Claude Code"
+  readonly capabilities: DaemonRuntimeCapabilities = {
+    supportsRequestUserInput: true,
+    supportsPlanMode: true,
+    supportsPersistentSession: true,
+    supportsStructuredIo: true,
+  }
 
   detect(): RuntimeCatalogEntry {
     const probe = detectClaudeBinary()

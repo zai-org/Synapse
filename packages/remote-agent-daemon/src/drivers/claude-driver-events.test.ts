@@ -46,7 +46,10 @@ test("buildPermissionResultForDecision defaults updatedInput to empty when omitt
     { behavior: "allow" },
     "tool-use-1"
   )
-  assert.deepEqual(result.updatedInput, {})
+  assert.deepEqual(
+    result.behavior === "allow" ? result.updatedInput : undefined,
+    {}
+  )
 })
 
 test("buildPermissionResultForDecision propagates deny with the supplied user-visible message", () => {

@@ -6,11 +6,15 @@ export type RuntimeKind = RemoteAgentRuntimeKind
 export const RUNTIME_KIND = {
   CLAUDE_CODE: "claude_code",
   CODEX: "codex",
+  PI: "pi",
+  OPENCODE: "opencode",
 } as const satisfies Record<string, RuntimeKind>
 
 export const RUNTIME_KINDS = [
   RUNTIME_KIND.CLAUDE_CODE,
   RUNTIME_KIND.CODEX,
+  RUNTIME_KIND.PI,
+  RUNTIME_KIND.OPENCODE,
 ] as const satisfies readonly RuntimeKind[]
 
 export type RuntimeCatalogStatus =
@@ -112,7 +116,20 @@ export interface AgentSession {
 
 export interface AgentDriver {
   readonly runtimeKind: RuntimeKind
+  /** Human-readable brand label shown in logs and catalog-issue messages. */
+  readonly label: string
+  /** Feature flags advertised to the api for this runtime kind. */
+  readonly capabilities: DaemonRuntimeCapabilities
   /** Probe the local machine for the runtime binary and report capabilities. */
   detect(): RuntimeCatalogEntry
   createSession(spec: SessionSpec): Promise<AgentSession>
+}
+
+/** Feature flags advertised per runtime kind (mirrors the api-side wire shape). */
+export type DaemonRuntimeCapabilities = {
+  supportsRequestUserInput?: boolean
+  supportsPlanMode?: boolean
+  supportsPersistentSession?: boolean
+  supportsCodexAppServer?: boolean
+  supportsStructuredIo?: boolean
 }

@@ -2,8 +2,9 @@
 
 import {
   RELATIONSHIP_APPROVAL_MODE,
-  REMOTE_AGENT_RUNTIME_KIND,
+  REMOTE_AGENT_RUNTIME_LABELS,
   REMOTE_AGENT_RUNTIME_STATE,
+  type RemoteAgentRuntimeKind,
   type TrustLevel,
 } from "@synapse/shared"
 import Link from "next/link"
@@ -88,11 +89,8 @@ function contactApprovalLabel(
   return value ? "approval required" : "open to workspace"
 }
 
-function runtimeLabel(value: string) {
-  return value === REMOTE_AGENT_RUNTIME_KIND.CLAUDE_CODE
-    ? "Claude Code"
-    : "Codex CLI"
-}
+const runtimeLabel = (value: string) =>
+  REMOTE_AGENT_RUNTIME_LABELS[value as RemoteAgentRuntimeKind] ?? value
 
 function sessionStateVariant(state?: RemoteAgentRuntimeSummaryView["state"]) {
   switch (state) {

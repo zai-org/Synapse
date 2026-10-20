@@ -21,6 +21,7 @@
 // not covered by access/guards.ts so the service threads no db value anywhere.
 
 import { sql } from "kysely"
+import type { RemoteAgentRuntimeKind } from "@synapse/shared"
 import { db } from "../../infrastructure/database/kysely.js"
 import type { RelationshipApprovalMode } from "../../infrastructure/database/generated/db.js"
 import {
@@ -177,10 +178,10 @@ export async function selectRemoteAgentSummaryRow(remoteAgentId: string) {
     workspaceSlug: string
     displayName: string
     title: string
-    runtimeKind: "claude_code" | "codex"
+    runtimeKind: RemoteAgentRuntimeKind
+    isPublicShared: boolean
     avatarFileId: string | null
     avatarEmoji: string | null
-    isPublicShared: boolean
   }>`
       SELECT
         ra.id AS remote_agent_id,
@@ -253,7 +254,7 @@ export async function selectWorkspaceRemoteAgentsForHub(workspaceId: string) {
     workspaceSlug: string
     displayName: string
     title: string
-    runtimeKind: "claude_code" | "codex"
+    runtimeKind: RemoteAgentRuntimeKind
     isPublicShared: boolean
     avatarEmoji: string | null
     avatarFileId: string | null

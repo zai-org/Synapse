@@ -44,6 +44,46 @@ function CodexIcon(props: IconProps) {
   )
 }
 
+// pi (pi.dev): stylized lowercase "pi" glyph — two strokes with a crossbar,
+// drawn as filled bars in the 24x24 grid.
+function PiIcon(props: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      width="1em"
+      height="1em"
+      aria-hidden="true"
+      {...props}
+    >
+      <path d="M3 5h18v2.4h-6.3c.2.9.3 1.9.3 2.9 0 3.4-.9 6-3.4 7.9l1.6 1.9c3.3-2.4 4.6-6 4.6-9.8 0-1-.1-2-.3-2.9H21V5H3z" />
+      <path d="M5.2 14.6h6v2.2h-6z" />
+    </svg>
+  )
+}
+
+// opencode (opencode.ai): terminal-prompt chevron + underscore, matching the
+// product's CLI-first mark.
+function OpencodeIcon(props: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      width="1em"
+      height="1em"
+      aria-hidden="true"
+      {...props}
+    >
+      <path d="M5 7l5 5-5 5" />
+      <path d="M13 17h6" />
+    </svg>
+  )
+}
+
 // Keyed by the closed RemoteAgentRuntimeKind union, so adding a runtime kind is
 // a compile error here until its icon is provided.
 const REMOTE_AGENT_RUNTIME_ICONS: Record<
@@ -52,6 +92,8 @@ const REMOTE_AGENT_RUNTIME_ICONS: Record<
 > = {
   claude_code: ClaudeCodeIcon,
   codex: CodexIcon,
+  pi: PiIcon,
+  opencode: OpencodeIcon,
 }
 
 export function RuntimeKindIcon({

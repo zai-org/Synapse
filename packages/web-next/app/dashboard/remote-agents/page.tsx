@@ -5,6 +5,10 @@ import { useDeferredValue, useMemo, useState } from "react"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { Bot, Copy, Plus, RefreshCcw, SquareTerminal } from "lucide-react"
 import { RuntimeKindIcon } from "@/components/runtime-kind-icon"
+import {
+  REMOTE_AGENT_RUNTIME_KINDS,
+  REMOTE_AGENT_RUNTIME_LABELS,
+} from "@synapse/shared"
 
 import { useWorkspace } from "../workspace-provider"
 import type {
@@ -13,7 +17,6 @@ import type {
   RemoteAgentRuntimeSummaryView,
   RemoteAgentRuntimeKind,
   RemoteAgentRuntimeStatus,
-  RemoteAgentView,
 } from "@/lib/api"
 import { api } from "@/lib/api"
 import { qk } from "@/lib/query-keys"
@@ -83,10 +86,6 @@ function runtimeVariant(status?: RemoteAgentRuntimeStatus) {
     default:
       return "outline"
   }
-}
-
-function normalizeRuntimeLabel(runtimeKind: RemoteAgentRuntimeKind) {
-  return runtimeKind === "claude_code" ? "Claude Code" : "Codex CLI"
 }
 
 function sessionStateVariant(state?: RemoteAgentRuntimeSummaryView["state"]) {
@@ -435,7 +434,7 @@ export default function RemoteAgentsPage() {
                         )}
                       >
                         <RuntimeKindIcon kind={agent.runtimeKind} />
-                        {normalizeRuntimeLabel(agent.runtimeKind)}
+                        {REMOTE_AGENT_RUNTIME_LABELS[agent.runtimeKind]}
                       </Badge>
                       {agent.runtimeSummary ? (
                         <Badge
@@ -619,8 +618,11 @@ export default function RemoteAgentsPage() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
-                      <SelectItem value="claude_code">Claude Code</SelectItem>
-                      <SelectItem value="codex">Codex CLI</SelectItem>
+                      {REMOTE_AGENT_RUNTIME_KINDS.map((kind) => (
+                        <SelectItem key={kind} value={kind}>
+                          {REMOTE_AGENT_RUNTIME_LABELS[kind]}
+                        </SelectItem>
+                      ))}
                     </SelectGroup>
                   </SelectContent>
                 </Select>

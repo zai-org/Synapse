@@ -30,7 +30,7 @@ test("parseResolvedTaskPayload normalizes resolved user-input task fields", () =
   assert.equal(task.conversationId, "conversation-1")
   assert.equal(task.kind, "user_input")
   assert.equal(task.lifecycleStatus, "completed")
-  assert.equal(task.userInput?.questions.length, 1)
+  assert.equal(task.userInput?.questions?.length, 1)
   assert.deepEqual(buildAnswerMap(task), {
     "Which path?": "Safe, with smoke tests",
   })
@@ -57,7 +57,7 @@ test("parseResolvedTaskPayload ignores malformed nested payload fields", () => {
   assert.equal(task.outcome, "approved")
   assert.equal(task.resolutionNote, undefined)
   assert.equal(task.userInput?.title, undefined)
-  assert.equal(task.userInput?.questions.length, 1)
+  assert.equal(task.userInput?.questions?.length, 1)
   assert.deepEqual(buildAnswerMap(task), {})
 })
 

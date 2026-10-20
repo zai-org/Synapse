@@ -49,7 +49,7 @@ CREATE TYPE catalog_version_files_file_role AS ENUM ('document', 'reference', 's
 CREATE TYPE plugin_package_version_specs_transport AS ENUM ('builtin', 'stdio', 'http', 'sse');
 CREATE TYPE plugin_package_version_specs_default_reuse_scope AS ENUM ('turn', 'session', 'workspace', 'conversation', 'actor');
 CREATE TYPE actors_role AS ENUM ('secretary', 'manager', 'specialist', 'reviewer', 'archivist', 'receptionist', 'assistant');
-CREATE TYPE remote_agents_runtime_kind AS ENUM ('claude_code', 'codex');
+CREATE TYPE remote_agents_runtime_kind AS ENUM ('claude_code', 'codex', 'pi', 'opencode');
 CREATE TYPE remote_agent_machines_trust_status AS ENUM ('pending', 'active', 'revoked', 'blocked');
 CREATE TYPE remote_agent_machines_lifecycle_state AS ENUM ('online', 'offline');
 CREATE TYPE remote_agent_machine_sessions_status AS ENUM ('connecting', 'active', 'closing', 'closed', 'rejected');
