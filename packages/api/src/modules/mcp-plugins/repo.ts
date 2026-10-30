@@ -51,7 +51,10 @@ import {
 } from "../../infrastructure/database/kysely.js"
 import { validateConversationScopedAccessTarget } from "../access/policy.js"
 import { buildConversationCapabilitySubjects } from "../access/subject-resolution.js"
-import { upsertAccessSubject } from "../access/subject-registry.js"
+import {
+  findAccessSubjectId,
+  upsertAccessSubject,
+} from "../access/subject-registry.js"
 import { getWorkspaceCapabilityConversationTypePolicyMap } from "../capabilities/conversation-type-policies.js"
 import { revokeWorkspaceResourceGrant } from "../workspace-resources/grant-storage.js"
 import {
@@ -1570,33 +1573,42 @@ function resolveVisibilitySubjectKind(type: VisibilitySubject["type"]) {
 }
 
 export async function buildPluginVisibilitySubjectIds(
-  params: VisibilitySubjectParams
+  params: VisibilitySubjectParams,
+  readOnly = false
 ) {
   const subjects = await buildVisibilitySubjects(params)
-  const subjectIds = await Promise.all(
-    subjects.map((subject) =>
-      upsertAccessSubject(db, {
-        kind: resolveVisibilitySubjectKind(subject.type),
-        ...(subject.type === "workspace" ? { workspaceId: subject.id } : {}),
-        ...(subject.type === "workspace_member"
-          ? { workspaceMemberId: subject.id }
-          : {}),
-        ...(subject.type === "actor" ? { actorId: subject.id } : {}),
-        ...(subject.type === "remote_agent"
-          ? { remoteAgentId: subject.id }
-          : {}),
-      } as any)
-    )
+  if (subjects.length === 0) {
+    return { subjectIds: [], runtimeScopeSubjectIds: [] }
+  }
+  const resolveSubjectId = readOnly ? findAccessSubjectId : upsertAccessSubject
+  const [resolvedSubjectIds, conversationSubjectId] = await Promise.all([
+    Promise.all(
+      subjects.map((subject) =>
+        resolveSubjectId(db, {
+          kind: resolveVisibilitySubjectKind(subject.type),
+          ...(subject.type === "workspace" ? { workspaceId: subject.id } : {}),
+          ...(subject.type === "workspace_member"
+            ? { workspaceMemberId: subject.id }
+            : {}),
+          ...(subject.type === "actor" ? { actorId: subject.id } : {}),
+          ...(subject.type === "remote_agent"
+            ? { remoteAgentId: subject.id }
+            : {}),
+        } as any)
+      )
+    ),
+    params.conversationId
+      ? resolveSubjectId(db, {
+          kind: SUBJECT_KIND.CONVERSATION,
+          conversationId: params.conversationId,
+        })
+      : Promise.resolve(null),
+  ])
+  const subjectIds = resolvedSubjectIds.filter(
+    (id): id is string => id !== null
   )
 
-  let conversationSubjectId: string | null = null
-  if (params.conversationId) {
-    conversationSubjectId = await upsertAccessSubject(db, {
-      kind: SUBJECT_KIND.CONVERSATION,
-      conversationId: params.conversationId,
-    })
-    subjectIds.push(conversationSubjectId)
-  }
+  if (conversationSubjectId) subjectIds.push(conversationSubjectId)
 
   return {
     subjectIds,
@@ -1768,10 +1780,27 @@ export type LoadVisiblePluginRowsParams = VisibilitySubjectParams & {
 export async function loadVisiblePluginRows(
   params: LoadVisiblePluginRowsParams
 ): Promise<VisiblePluginRow[]> {
+  return loadVisiblePluginRowsForQuery(params)
+}
+
+export async function isPluginInstallationVisible(
+  params: LoadVisiblePluginRowsParams,
+  installationId: string
+): Promise<boolean> {
+  const rows = await loadVisiblePluginRowsForQuery(params, installationId)
+  return rows.length > 0
+}
+
+async function loadVisiblePluginRowsForQuery(
+  params: LoadVisiblePluginRowsParams,
+  installationId?: string
+): Promise<VisiblePluginRow[]> {
+  if (installationId === "") return []
   const { subjectIds, runtimeScopeSubjectIds } =
-    await buildPluginVisibilitySubjectIds(params)
+    await buildPluginVisibilitySubjectIds(params, installationId !== undefined)
+  if (subjectIds.length === 0) return []
   const visibleInstallationIds = new Set<string>()
-  const grantRows = await db
+  let grantQuery = db
     .selectFrom("workspaceResourceGrants as resource_grant")
     .select("resource_grant.workspaceResourceId")
     .distinct()
@@ -1788,7 +1817,14 @@ export async function loadVisiblePluginRows(
           ])
         : eb("resource_grant.scopeSubjectId", "is", null)
     )
-    .execute()
+  if (installationId !== undefined) {
+    grantQuery = grantQuery.where(
+      "resource_grant.workspaceResourceId",
+      "=",
+      installationId
+    )
+  }
+  const grantRows = await grantQuery.execute()
 
   for (const row of grantRows) {
     visibleInstallationIds.add(row.workspaceResourceId)

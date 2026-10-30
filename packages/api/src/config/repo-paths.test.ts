@@ -25,8 +25,8 @@ test("repo path helpers resolve from module location instead of cwd", async () =
 
     assert.equal(repoPaths.repoRoot, expectedRepoRoot)
     assert.equal(
-      repoPaths.resolveRepoPath("docs", "device-runtime-v3.md"),
-      join(expectedRepoRoot, "docs", "device-runtime-v3.md")
+      repoPaths.resolveRepoPath("docs", "readme", "README.es.md"),
+      join(expectedRepoRoot, "docs", "readme", "README.es.md")
     )
     assert.equal(
       subprojects.resolveRepoSubprojectRoot("cli-anything"),
@@ -38,7 +38,7 @@ test("repo path helpers resolve from module location instead of cwd", async () =
     )
 
     assert.equal(
-      existsSync(repoPaths.resolveRepoPath("docs", "device-runtime-v3.md")),
+      existsSync(repoPaths.resolveRepoPath("docs", "readme", "README.es.md")),
       true
     )
 

@@ -19,17 +19,58 @@ permissions:
 jobs:
   verify-boundary:
     runs-on: ubuntu-latest
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 127.0.0.1:6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
     env:
-      # The fs-helper is a Rust sidecar not needed for the boundary contract;
-      # let pretest skip its rebuild so the gate is deterministic in CI. The
-      # helper-backed test cases skip cleanly when the binary is absent.
-      ALLOW_MISSING_FS_HELPER: "1"
+      REDIS_URL: redis://127.0.0.1:6379
+      # The API materialization tests require the real helper. Build failures
+      # must stop the gate rather than silently omit helper-backed coverage.
+      ALLOW_MISSING_FS_HELPER: "0"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
           cache: "npm"
+      - name: Install Linux test dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes \
+            bubblewrap git-lfs apparmor-profiles \
+            libx11-dev libxtst-dev libxinerama-dev libxrandr-dev \
+            libxcomposite-dev libxrender-dev libxfixes-dev
+          bwrap --version
+          git lfs version
+      - name: Load packaged Bubblewrap policy when required
+        run: |
+          restriction=/proc/sys/kernel/apparmor_restrict_unprivileged_userns
+          if [ -f "$restriction" ] && [ "$(cat "$restriction")" = "1" ]; then
+            profile=/usr/share/apparmor/extra-profiles/bwrap-userns-restrict
+            test -f "$profile"
+            dpkg-query --search "$profile"
+            sha256sum "$profile"
+            sudo apparmor_parser -r "$profile"
+            test "$(cat "$restriction")" = "1"
+          fi
+          test "$(id -u)" -ne 0
+      - name: Materialize host toolchain archives
+        run: |
+          git lfs pull --include="packages/device-runtime-bundles-linux-x64/bundles/*"
+          for archive in packages/device-runtime-bundles-linux-x64/bundles/*.tar.gz; do
+            expected="$(basename "$archive" .tar.gz)"
+            printf '%s  %s\n' "$expected" "$archive" | sha256sum --check -
+            stat --printf='%n %s bytes\n' "$archive"
+            tar -tzf "$archive" > "$RUNNER_TEMP/$expected.contents"
+            sed -n '1,3p' "$RUNNER_TEMP/$expected.contents"
+          done
       - name: Install dependencies
         run: npm ci
       - name: Install mobile-app dependencies
@@ -37,5 +78,7 @@ jobs:
         # install it; its typecheck (pretypecheck → sync:shared → tsc) needs
         # its own node_modules.
         run: npm --prefix packages/mobile-app ci
+      - name: Build filesystem helper
+        run: npm run build:fs-helper
       - name: verify:boundary
         run: npm run verify:boundary
