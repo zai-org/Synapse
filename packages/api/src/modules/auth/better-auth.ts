@@ -267,6 +267,11 @@ const feishuProvider = buildFeishuProvider()
  * device_code tables (hand-written in schema.sql, snake_case, mapped here via
  * modelName + per-field `fields`). Mounted under /api/v1/auth (see auth module).
  */
+// Annotated with the library's public Auth type: better-auth 1.7's inferred
+// instance type reaches into a nested `@better-auth/expo/node_modules/zod` copy
+// that all of this repo's workspaces pin below better-auth's range, and TS2742
+// refuses to emit a declaration that names that path. `auth.api.getSession` and
+// `auth.handler` are the only members this module's consumers use.
 export const auth = betterAuth({
   appName: "Synapse",
   // baseURL MUST be the public browser origin (drives OAuth redirect_uri + the
@@ -541,6 +546,6 @@ export const auth = betterAuth({
     }),
     ...(feishuProvider ? [genericOAuth({ config: [feishuProvider] })] : []),
   ],
-})
+}) as unknown as ReturnType<typeof betterAuth>
 
 export type Auth = typeof auth
