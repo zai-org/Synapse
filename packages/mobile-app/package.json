@@ -22,15 +22,15 @@
     "lint:fix": "eslint app src --fix"
   },
   "dependencies": {
-    "@better-auth/core": "1.6.13",
-    "@better-auth/expo": "1.6.13",
+    "@better-auth/core": "1.7.7",
+    "@better-auth/expo": "1.7.7",
     "@expo/vector-icons": "^15.0.3",
     "@react-navigation/native": "^7.1.8",
     "@sentry/react-native": "~7.13.0",
     "@shopify/flash-list": "2.0.2",
     "@tanstack/react-query": "^5.100.14",
     "@vscode/markdown-it-katex": "^1.1.2",
-    "better-auth": "1.6.13",
+    "better-auth": "1.7.7",
     "expo": "~54.0.33",
     "expo-audio": "~1.1.1",
     "expo-background-task": "~1.0.10",
@@ -81,7 +81,7 @@
     "typescript": "~5.9.2"
   },
   "overrides": {
-    "@better-auth/core": "1.6.13"
+    "@better-auth/core": "1.7.7"
   },
   "private": true
 }

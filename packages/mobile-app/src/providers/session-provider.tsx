@@ -121,7 +121,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     // that was established by the browser flow, not by our email sign-in).
     let storedToken = await readStoredValue(SESSION_TOKEN_KEY)
     if (!storedToken) {
-      const jarToken = getSessionBearerToken()
+      const jarToken = await getSessionBearerToken()
       if (jarToken) {
         storedToken = jarToken
         await persistSessionToken(jarToken)
@@ -175,7 +175,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const verifyOAuthSession = useCallback(async () => {
     let token = await readStoredValue(SESSION_TOKEN_KEY)
     if (!token) {
-      const jarToken = getSessionBearerToken()
+      const jarToken = await getSessionBearerToken()
       if (jarToken) {
         token = jarToken
         await persistSessionToken(jarToken)
@@ -220,7 +220,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     }
     // Prefer the token from the response body; fall back to the expo cookie-jar.
     // This is the bearer token the REST/WS layers attach.
-    const token = data?.token ?? getSessionBearerToken()
+    const token = data?.token ?? (await getSessionBearerToken())
     await persistSessionToken(token)
     setApiAuthToken(token)
     const me = await api.getMe()
@@ -242,7 +242,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
           error.code
         )
       }
-      const token = data?.token ?? getSessionBearerToken()
+      const token = data?.token ?? (await getSessionBearerToken())
       await persistSessionToken(token)
       setApiAuthToken(token)
       const me = await api.getMe()

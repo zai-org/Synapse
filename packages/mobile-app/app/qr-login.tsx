@@ -32,6 +32,13 @@ export default function QrLoginScreen() {
   const [status, setStatus] = useState<DeviceStatus>("claiming")
   const [error, setError] = useState<string | null>(null)
   const [action, setAction] = useState<"approve" | "deny" | null>(null)
+  // The requesting client and the permissions it asks for, read from the
+  // server-checked GET /device response (better-auth 1.7+); approval stays
+  // disabled until both are known so the user never approves blind.
+  const [approvalInfo, setApprovalInfo] = useState<{
+    clientId: string
+    scope: string
+  } | null>(null)
 
   useEffect(() => {
     if (!userCode) {
@@ -46,7 +53,7 @@ export default function QrLoginScreen() {
     async function claim() {
       try {
         assertAuthConfigured()
-        const { error: claimError } = await getAuthClient().device({
+        const { data: claimData, error: claimError } = await getAuthClient().device({
           query: { user_code: userCode as string },
         })
         if (cancelled) return
@@ -55,6 +62,12 @@ export default function QrLoginScreen() {
           setStatus("error")
           return
         }
+        const claimed = claimData as { client_id?: string; scope?: string } | null
+        setApprovalInfo(
+          claimed?.client_id
+            ? { clientId: claimed.client_id, scope: claimed.scope ?? "" }
+            : null
+        )
         setStatus("pending")
       } catch (nextError) {
         if (!cancelled) {
@@ -165,6 +178,14 @@ export default function QrLoginScreen() {
           <View style={styles.metaGrid}>
             <MetaRow label="验证码" value={userCode ?? "-"} />
             <MetaRow
+              label="请求方"
+              value={approvalInfo?.clientId ?? "读取中..."}
+            />
+            <MetaRow
+              label="权限"
+              value={approvalInfo ? approvalInfo.scope || "无" : "读取中..."}
+            />
+            <MetaRow
               label="当前账号"
               value={user?.name || user?.email || "当前账号"}
             />
@@ -188,7 +209,7 @@ export default function QrLoginScreen() {
                 label={action === "approve" ? "批准中..." : "批准登录"}
                 icon="shield"
                 onPress={() => void handleApprove()}
-                disabled={action !== null}
+                disabled={action !== null || !approvalInfo}
               />
               <Button
                 label={action === "deny" ? "拒绝中..." : "拒绝此次登录"}
