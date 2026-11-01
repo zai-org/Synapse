@@ -65,8 +65,8 @@ export default function LoginScreen() {
       // Native: opens the system browser and returns via the app scheme deep
       // link. callbackURL MUST start with "/" so @better-auth/expo rewrites it
       // to the app scheme (otherwise BA falls back to the public web URL).
-      const { error: oauthError } = await getAuthClient().signIn.oauth2({
-        providerId: "feishu",
+      const { error: oauthError } = await getAuthClient().signIn.social({
+        provider: "feishu",
         callbackURL: "/",
         errorCallbackURL: "/",
       })

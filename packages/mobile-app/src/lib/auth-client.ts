@@ -1,9 +1,6 @@
 import { createAuthClient } from "better-auth/react"
 import { expoClient } from "@better-auth/expo/client"
-import {
-  genericOAuthClient,
-  deviceAuthorizationClient,
-} from "better-auth/client/plugins"
+import { deviceAuthorizationClient } from "better-auth/client/plugins"
 import * as SecureStore from "expo-secure-store"
 import { Platform } from "react-native"
 
@@ -25,7 +22,16 @@ const authStorage =
           typeof window !== "undefined"
             ? window.localStorage.getItem(key)
             : null,
+        getItemAsync: async (key: string): Promise<string | null> =>
+          typeof window !== "undefined"
+            ? window.localStorage.getItem(key)
+            : null,
         setItem: (key: string, value: string): void => {
+          if (typeof window !== "undefined") {
+            window.localStorage.setItem(key, value)
+          }
+        },
+        setItemAsync: async (key: string, value: string): Promise<void> => {
           if (typeof window !== "undefined") {
             window.localStorage.setItem(key, value)
           }
@@ -33,14 +39,20 @@ const authStorage =
       }
     : {
         getItem: (key: string) => SecureStore.getItem(key),
+        getItemAsync: (key: string) => SecureStore.getItemAsync(key),
         setItem: (key: string, value: string) =>
           SecureStore.setItem(key, value),
+        setItemAsync: (key: string, value: string) =>
+          SecureStore.setItemAsync(key, value),
       }
 
 // Lazily constructed so this module can be imported during Expo web static
 // prerender (and with any env) without running createAuthClient at load. The
-// factory wrapper preserves the plugin-derived action types (signIn.oauth2,
-// device, ...) that a bare `ReturnType<typeof createAuthClient>` would lose.
+// factory wrapper preserves the plugin-derived action types (device, ...) that
+// a bare `ReturnType<typeof createAuthClient>` would lose. better-auth 1.7
+// registers generic OAuth providers as first-class social providers, so the
+// old genericOAuthClient() plugin (and signIn.oauth2) are gone; sign-in goes
+// through signIn.social({ provider: "feishu" }).
 function createConfiguredAuthClient() {
   return createAuthClient({
     // Public origin Better Auth is mounted on; basePath rides the same /api/v1
@@ -55,7 +67,6 @@ function createConfiguredAuthClient() {
         storagePrefix: "synapse",
         storage: authStorage,
       }),
-      genericOAuthClient(),
       deviceAuthorizationClient(),
     ],
   })
@@ -83,8 +94,11 @@ export function getAuthClient(): AuthClient {
  * Returns null on web (the cookie-jar is empty there; web uses the browser
  * cookie store) or when no session cookie is present.
  */
-export function getSessionBearerToken(): string | null {
-  const header = getAuthClient().getCookie()
+export async function getSessionBearerToken(): Promise<string | null> {
+  // @better-auth/expo 1.7 made getCookie() async (it reads the storage adapter
+  // asynchronously); the jar can also be chunked, so callers must use this API
+  // rather than reading the storage key directly.
+  const header = await getAuthClient().getCookie()
   if (!header) return null
   for (const part of header.split(";")) {
     const eq = part.indexOf("=")
