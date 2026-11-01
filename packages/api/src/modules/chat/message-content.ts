@@ -1,7 +1,6 @@
 import {
   extractText,
   fileRefBlock,
-  isCanonicalContentBlock,
   mentionBlock,
   normalizeCanonicalContentBlocks,
   parseJsonObject,
@@ -324,9 +323,7 @@ export async function buildNormalizedMessageContent(params: {
   }
 
   const explicitBlocks = Array.isArray(contentBlocks)
-    ? normalizeCanonicalContentBlocks(
-        contentBlocks.filter(isCanonicalContentBlock)
-      )
+    ? normalizeCanonicalContentBlocks(contentBlocks)
     : []
   const built =
     explicitBlocks.length > 0
