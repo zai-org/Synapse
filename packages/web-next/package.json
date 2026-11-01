@@ -35,7 +35,7 @@
     "@tiptap/react": "^3.20.6",
     "@tiptap/starter-kit": "^3.20.6",
     "@tiptap/suggestion": "^3.20.6",
-    "better-auth": "1.6.13",
+    "better-auth": "1.7.7",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "embla-carousel-react": "^8.6.0",
